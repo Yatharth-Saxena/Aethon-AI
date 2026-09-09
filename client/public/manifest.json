@@ -1,0 +1,17 @@
+{
+  "name": "AETHON — AI Mission Control & Payload Assembly",
+  "short_name": "AETHON",
+  "description": "Autonomous AI Perception, Crew Guidance & Real-Time Telemetry Console for Human Spaceflight & Orbital Payload Assembly",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/isro-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

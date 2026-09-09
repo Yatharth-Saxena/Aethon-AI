@@ -1,0 +1,73 @@
+# Dependencies
+**/node_modules
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build outputs
+dist/
+build/
+*.dist
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs & Runtime telemetry
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data & Sessions (keep directories via .gitkeep)
+pids
+*.pid
+*.seed
+*.pid.lock
+data/sessions/*
+!data/sessions/.gitkeep
+data/logs/*
+!data/logs/.gitkeep
+
+# Temporary root test frames
+/*.jpg
+
+# Webdev artifacts
+.webdev/
+client/public/__manus__/version.json
+.project-config.json
