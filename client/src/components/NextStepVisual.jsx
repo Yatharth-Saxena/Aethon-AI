@@ -3,12 +3,15 @@ import React, { useMemo } from "react";
 /**
  * NextStepVisual
  * 
- * Cinematic, aerospace-grade vector animation demonstrating the required next step:
- * - PICK_UP: Lifting Object A (red block) upward with guide chevrons, gripper brackets, and ground pulse.
+ * Aerospace-grade, self-contained SVG vector animation demonstrating procedural assembly steps:
+ * - PICK_UP: Lifting Object A (red cube) upward with guide chevrons, gripper brackets, and ground pulse.
  * - PLACE: Aligning and placing Object A onto Object B (wooden block) with descent guide and touchdown shockwave.
- * - TRAY: Stowing Object A into the apparatus tray along a curved parabolic path.
+ * - TRAY: Stowing Object A into the apparatus tray along a curved path.
  * - PRESS: Pressing the industrial mission complete button with probe depression and radiating sonar ripples.
  * - COMPLETED: Sequence verified seal with glowing hex bezel and success checkmark.
+ * 
+ * Uses native SVG SMIL / <animateTransform> & <animate> for guaranteed 60 FPS hardware-accelerated
+ * motion across all browsers, Electron, and Windows WebView2 desktop runtimes.
  */
 
 export function resolveStepType(stepNumber, label = "", stepData = null, status = "") {
@@ -58,16 +61,16 @@ export default function NextStepVisual({
   const badgeMeta = useMemo(() => {
     switch (stepType) {
       case "PLACE":
-        return { text: "STACK", color: "#38bdf8", icon: "▼" };
+        return { text: "STACK" };
       case "TRAY":
-        return { text: "TRAY", color: "#c084fc", icon: "➜" };
+        return { text: "TRAY" };
       case "PRESS":
-        return { text: "PRESS", color: "#f59e0b", icon: "●" };
+        return { text: "PRESS" };
       case "COMPLETED":
-        return { text: "DONE", color: "#10b981", icon: "✔" };
+        return { text: "DONE" };
       case "PICK_UP":
       default:
-        return { text: "LIFT", color: "#00e6c8", icon: "▲" };
+        return { text: "LIFT" };
     }
   }, [stepType]);
 
@@ -79,11 +82,6 @@ export default function NextStepVisual({
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* Subtle grid pattern for aerospace HUD */}
-          <pattern id="nsvGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(0, 230, 200, 0.05)" strokeWidth="0.5" />
-          </pattern>
-
           {/* Gradients for Object A (Red Cube) */}
           <linearGradient id="nsvRedTop" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#f87171" />
@@ -114,12 +112,12 @@ export default function NextStepVisual({
 
           {/* Tray gradients */}
           <linearGradient id="nsvTrayRim" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#c084fc" />
-            <stop offset="100%" stopColor="#a855f7" />
+            <stop offset="0%" stopColor="#64748b" />
+            <stop offset="100%" stopColor="#475569" />
           </linearGradient>
           <linearGradient id="nsvTrayBed" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(168, 85, 247, 0.28)" />
-            <stop offset="100%" stopColor="rgba(88, 28, 135, 0.5)" />
+            <stop offset="0%" stopColor="rgba(30, 41, 59, 0.8)" />
+            <stop offset="100%" stopColor="rgba(15, 23, 42, 0.95)" />
           </linearGradient>
 
           {/* Button gradients */}
@@ -143,64 +141,83 @@ export default function NextStepVisual({
           </filter>
         </defs>
 
-        {/* Ambient Grid Background */}
-        <rect width="100" height="100" fill="url(#nsvGrid)" />
-
-        {/* Outer HUD Corner Ticks */}
-        <path d="M 4 10 L 4 4 L 10 4" fill="none" stroke="rgba(0, 230, 200, 0.35)" strokeWidth="1" />
-        <path d="M 96 10 L 96 4 L 90 4" fill="none" stroke="rgba(0, 230, 200, 0.35)" strokeWidth="1" />
-        <path d="M 4 90 L 4 96 L 10 96" fill="none" stroke="rgba(0, 230, 200, 0.35)" strokeWidth="1" />
-        <path d="M 96 90 L 96 96 L 90 96" fill="none" stroke="rgba(0, 230, 200, 0.35)" strokeWidth="1" />
-
-        {/* Step Index HUD at top-left */}
-        <text
-          x="8"
-          y="13"
-          fill="rgba(215, 225, 230, 0.65)"
-          fontSize="7.5"
-          fontFamily="var(--mono)"
-          fontWeight="600"
-          letterSpacing="0.08em"
-        >
-          {status === "COMPLETED" ? "COMPLETE" : `STEP ${stepIndexFormatted}`}
-        </text>
-
-        {/* Step status radar beacon dot at top-right */}
-        <circle cx="91" cy="9" r="2" fill={badgeMeta.color} filter="url(#nsvGlow)" className="nsv-beacon-dot" />
-
         {/* ============================================================= */}
         {/* STEP ANIMATION CONTENT                                         */}
         {/* ============================================================= */}
 
         {stepType === "PICK_UP" && (
           <g className="nsv-pickup-group">
-            {/* Ground surface plane with cross grid */}
+            {/* Ground surface plane */}
             <ellipse cx="50" cy="78" rx="22" ry="9" fill="rgba(0, 230, 200, 0.04)" stroke="rgba(0, 230, 200, 0.2)" strokeWidth="0.8" />
-            <ellipse cx="50" cy="78" rx="14" ry="6" fill="none" stroke="rgba(0, 230, 200, 0.45)" strokeDasharray="2 2" className="nsv-ground-ring" />
+            
+            {/* Ground pulsing ring with native SVG animation */}
+            <ellipse cx="50" cy="78" rx="14" ry="6" fill="none" stroke="rgba(0, 230, 200, 0.35)" strokeDasharray="2 2">
+              <animate attributeName="rx" values="12; 20; 12" dur="2.6s" repeatCount="indefinite" />
+              <animate attributeName="ry" values="5; 8.5; 5" dur="2.6s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.7; 0.15; 0.7" dur="2.6s" repeatCount="indefinite" />
+            </ellipse>
 
             {/* Vertical trajectory dashed guide line */}
-            <line x1="50" y1="74" x2="50" y2="28" stroke="#00e6c8" strokeWidth="1" strokeDasharray="3 3" className="nsv-vert-flow" />
+            <line x1="50" y1="74" x2="50" y2="28" stroke="rgba(0, 230, 200, 0.5)" strokeWidth="1" strokeDasharray="3 3">
+              <animate attributeName="stroke-dashoffset" values="12; 0" dur="1.2s" repeatCount="indefinite" />
+            </line>
 
-            {/* Upward chevron motion arrows */}
-            <g className="nsv-chevron-up-1">
-              <path d="M 46 62 L 50 58 L 54 62" fill="none" stroke="#00e6c8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            {/* Upward chevron motion arrows with native SVG translate */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0,4; 0,-8"
+                dur="1.4s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0; 1; 1; 0" keyTimes="0; 0.2; 0.7; 1" dur="1.4s" repeatCount="indefinite" />
+              <path d="M 46 62 L 50 58 L 54 62" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </g>
-            <g className="nsv-chevron-up-2">
-              <path d="M 46 52 L 50 48 L 54 52" fill="none" stroke="#00e6c8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0,4; 0,-8"
+                begin="0.4s"
+                dur="1.4s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0; 1; 1; 0" keyTimes="0; 0.2; 0.7; 1" begin="0.4s" dur="1.4s" repeatCount="indefinite" />
+              <path d="M 46 52 L 50 48 L 54 52" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </g>
 
-            {/* Lifting Object A (Red Cube) */}
-            <g className="nsv-cube-lift">
+            {/* Lifting Object A (Red Cube) with native SVG translate and gripper clamping */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="50,60; 50,60; 50,28; 50,28; 50,60"
+                keyTimes="0; 0.15; 0.50; 0.80; 1"
+                dur="2.6s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+              />
+
               {/* Object A Cube facets */}
               <polygon points="0,-7 12,0 0,7 -12,0" fill="url(#nsvRedTop)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
               <polygon points="-12,0 0,7 0,19 -12,12" fill="url(#nsvRedLeft)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
               <polygon points="0,7 12,0 12,12 0,19" fill="url(#nsvRedRight)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
               <text x="0" y="3" textAnchor="middle" fontSize="6.5" fontWeight="bold" fill="#ffffff" fontFamily="var(--mono)">A</text>
 
-              {/* Grasp / Gripper indicator brackets on cube */}
-              <g className="nsv-grippers">
-                <path d="M -18 0 L -15 0 L -15 12 L -18 12" fill="none" stroke="#00e6c8" strokeWidth="1.2" strokeLinecap="round" />
-                <path d="M 18 0 L 15 0 L 15 12 L 18 12" fill="none" stroke="#00e6c8" strokeWidth="1.2" strokeLinecap="round" />
+              {/* Gripper brackets on cube */}
+              <g>
+                <animateTransform
+                  attributeName="transform"
+                  type="scale"
+                  values="1.35 1; 1 1; 1 1; 1.35 1; 1.35 1"
+                  keyTimes="0; 0.2; 0.8; 0.95; 1"
+                  dur="2.6s"
+                  repeatCount="indefinite"
+                />
+                <path d="M -18 0 L -15 0 L -15 12 L -18 12" fill="none" stroke="rgba(0, 230, 200, 0.7)" strokeWidth="1.2" strokeLinecap="round" />
+                <path d="M 18 0 L 15 0 L 15 12 L 18 12" fill="none" stroke="rgba(0, 230, 200, 0.7)" strokeWidth="1.2" strokeLinecap="round" />
               </g>
             </g>
           </g>
@@ -221,25 +238,54 @@ export default function NextStepVisual({
 
             {/* Target Docking Alignment crosshair on top of B */}
             <g transform="translate(50, 56)">
-              <path d="M -9 -1 L -12 0 L -9 1" fill="none" stroke="#38bdf8" strokeWidth="0.8" />
-              <path d="M 9 -1 L 12 0 L 9 1" fill="none" stroke="#38bdf8" strokeWidth="0.8" />
+              <path d="M -9 -1 L -12 0 L -9 1" fill="none" stroke="rgba(224, 233, 236, 0.5)" strokeWidth="0.8" />
+              <path d="M 9 -1 L 12 0 L 9 1" fill="none" stroke="rgba(224, 233, 236, 0.5)" strokeWidth="0.8" />
             </g>
 
-            {/* Touchdown shockwave wave expanding at landing */}
-            <g transform="translate(50, 56)">
-              <ellipse cx="0" cy="0" rx="16" ry="7" fill="none" stroke="#00e6c8" strokeWidth="1.5" className="nsv-impact-shockwave" />
-            </g>
+            {/* Touchdown shockwave expanding at contact */}
+            <ellipse cx="50" cy="56" rx="6" ry="3" fill="none" stroke="rgba(0, 230, 200, 0.6)" strokeWidth="1.5">
+              <animate attributeName="rx" values="4; 4; 22; 22" keyTimes="0; 0.48; 0.75; 1" dur="2.6s" repeatCount="indefinite" />
+              <animate attributeName="ry" values="2; 2; 10; 10" keyTimes="0; 0.48; 0.75; 1" dur="2.6s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0; 0; 0.9; 0" keyTimes="0; 0.48; 0.52; 0.78" dur="2.6s" repeatCount="indefinite" />
+            </ellipse>
 
             {/* Downward guide motion chevrons */}
-            <g className="nsv-chevron-down-1">
-              <path d="M 46 25 L 50 29 L 54 25" fill="none" stroke="#00e6c8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0,-4; 0,8"
+                dur="1.4s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0; 1; 1; 0" keyTimes="0; 0.2; 0.7; 1" dur="1.4s" repeatCount="indefinite" />
+              <path d="M 46 25 L 50 29 L 54 25" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </g>
-            <g className="nsv-chevron-down-2">
-              <path d="M 46 34 L 50 38 L 54 34" fill="none" stroke="#00e6c8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0,-4; 0,8"
+                begin="0.4s"
+                dur="1.4s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0; 1; 1; 0" keyTimes="0; 0.2; 0.7; 1" begin="0.4s" dur="1.4s" repeatCount="indefinite" />
+              <path d="M 46 34 L 50 38 L 54 34" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </g>
 
-            {/* Object A (Red Cube) descending onto B */}
-            <g className="nsv-cube-place">
+            {/* Object A (Red Cube) descending onto B with native SVG translate */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="50,14; 50,14; 50,37; 50,37; 50,14"
+                keyTimes="0; 0.15; 0.50; 0.80; 1"
+                dur="2.6s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+              />
               <polygon points="0,-7 12,0 0,7 -12,0" fill="url(#nsvRedTop)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
               <polygon points="-12,0 0,7 0,19 -12,12" fill="url(#nsvRedLeft)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
               <polygon points="0,7 12,0 12,12 0,19" fill="url(#nsvRedRight)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
@@ -255,86 +301,118 @@ export default function NextStepVisual({
 
             {/* Isometric Apparatus Tray at bottom-right */}
             <g transform="translate(68, 62)">
-              {/* Tray base/outer rim */}
-              <polygon points="0,-12 24,0 0,12 -24,0" fill="url(#nsvTrayBed)" stroke="url(#nsvTrayRim)" strokeWidth="1.4" className="nsv-tray-pulse" />
-              {/* Tray inner receptacle lip */}
-              <polygon points="0,-8 17,0 0,8 -17,0" fill="rgba(28, 14, 45, 0.85)" stroke="rgba(192, 132, 252, 0.4)" strokeWidth="0.8" />
-              {/* Receptacle target alignment ticks */}
-              <path d="M -7 0 L 7 0" stroke="rgba(192, 132, 252, 0.5)" strokeWidth="0.7" strokeDasharray="1 1" />
-              {/* Tech corner status LED */}
-              <circle cx="21" cy="-1" r="1.5" fill="#10b981" filter="url(#nsvGlow)" />
+              <polygon points="0,-12 24,0 0,12 -24,0" fill="url(#nsvTrayBed)" stroke="url(#nsvTrayRim)" strokeWidth="1.4">
+                <animate attributeName="stroke-width" values="1.2; 2.2; 1.2" dur="2.8s" repeatCount="indefinite" />
+              </polygon>
+              <polygon points="0,-8 18,0 0,8 -18,0" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.6" />
+              <text x="0" y="2" textAnchor="middle" fontSize="5" fontWeight="bold" fill="rgba(224, 233, 236, 0.8)" fontFamily="var(--mono)">TRAY</text>
             </g>
 
-            {/* Parabolic flight trajectory curve from table to tray */}
-            <path
-              d="M 26 42 Q 47 14 68 56"
-              fill="none"
-              stroke="#c084fc"
-              strokeWidth="1.5"
-              strokeDasharray="3 3"
-              className="nsv-tray-curve"
-            />
-            {/* Flowing arrow head near the end */}
-            <polygon points="68,54 64,48 70,49" fill="#c084fc" />
+            {/* Parabolic Guide Curve */}
+            <path d="M 26 36 Q 44 14 68 50" fill="none" stroke="rgba(0, 230, 200, 0.6)" strokeWidth="1.2" strokeDasharray="3 3">
+              <animate attributeName="stroke-dashoffset" values="24; 0" dur="1.4s" repeatCount="indefinite" />
+            </path>
 
-            {/* Object A (Red Cube) moving along the arc into tray */}
-            <g className="nsv-cube-tray">
-              <polygon points="0,-6 10,0 0,6 -10,0" fill="url(#nsvRedTop)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
-              <polygon points="-10,0 0,6 0,16 -10,10" fill="url(#nsvRedLeft)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
-              <polygon points="0,6 10,0 10,10 0,16" fill="url(#nsvRedRight)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
-              <text x="0" y="2.5" textAnchor="middle" fontSize="5.5" fontWeight="bold" fill="#ffffff" fontFamily="var(--mono)">A</text>
+            {/* Object A moving along path into tray */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="26,32; 26,32; 68,50; 68,50; 26,32"
+                keyTimes="0; 0.15; 0.52; 0.82; 1"
+                dur="2.8s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+              />
+              <polygon points="0,-7 12,0 0,7 -12,0" fill="url(#nsvRedTop)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
+              <polygon points="-12,0 0,7 0,19 -12,12" fill="url(#nsvRedLeft)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
+              <polygon points="0,7 12,0 12,12 0,19" fill="url(#nsvRedRight)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
+              <text x="0" y="3" textAnchor="middle" fontSize="6.5" fontWeight="bold" fill="#ffffff" fontFamily="var(--mono)">A</text>
             </g>
           </g>
         )}
 
         {stepType === "PRESS" && (
           <g className="nsv-press-group">
-            {/* Console button base platform */}
-            <ellipse cx="50" cy="56" rx="28" ry="14" fill="rgba(15, 23, 42, 0.7)" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="1" />
+            {/* Button Bezel Base */}
+            <circle cx="50" cy="54" r="19" fill="url(#nsvBtnBezel)" stroke="#475569" strokeWidth="1.4" />
+            <circle cx="50" cy="54" r="15" fill="#0f172a" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="0.8" />
 
-            {/* Beveled outer metallic bezel */}
-            <circle cx="50" cy="54" r="22" fill="url(#nsvBtnBezel)" stroke="rgba(255, 255, 255, 0.22)" strokeWidth="1.2" />
-            <circle cx="50" cy="54" r="17" fill="#0f172a" stroke="rgba(245, 158, 11, 0.35)" strokeWidth="0.8" />
-
-            {/* Radiating sonar ripples on button press */}
-            <circle cx="50" cy="54" r="14" fill="none" stroke="#00e6c8" strokeWidth="1.5" className="nsv-press-ripple-1" />
-            <circle cx="50" cy="54" r="14" fill="none" stroke="#f59e0b" strokeWidth="1.2" className="nsv-press-ripple-2" />
+            {/* Sonar radiating ripple waves */}
+            <circle cx="50" cy="54" r="13" fill="none" stroke="rgba(0, 230, 200, 0.5)" strokeWidth="1.5">
+              <animate attributeName="r" values="12; 12; 28; 28" keyTimes="0; 0.48; 0.82; 1" dur="2.4s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0; 0; 0.9; 0" keyTimes="0; 0.48; 0.52; 0.85" dur="2.4s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="50" cy="54" r="14" fill="none" stroke="rgba(224, 233, 236, 0.4)" strokeWidth="1.2">
+              <animate attributeName="r" values="13; 13; 36; 36" keyTimes="0; 0.52; 0.90; 1" dur="2.4s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0; 0; 0.8; 0" keyTimes="0; 0.52; 0.56; 0.92" dur="2.4s" repeatCount="indefinite" />
+            </circle>
 
             {/* Animated Gold Plunger (compresses when pressed) */}
-            <g className="nsv-btn-plunger">
-              <circle cx="50" cy="54" r="12" fill="url(#nsvBtnPlunger)" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="0.8" />
-              {/* Tactile concentric ring & finish power symbol */}
-              <circle cx="50" cy="54" r="7" fill="none" stroke="rgba(0, 0, 0, 0.35)" strokeWidth="1" />
-              <path d="M 50 49 L 50 54" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
-              <path d="M 47.5 51.5 A 3.5 3.5 0 1 0 52.5 51.5" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+            <g transform="translate(50, 54)">
+              <g>
+                <animateTransform
+                  attributeName="transform"
+                  type="scale"
+                  values="1; 1; 0.88; 0.88; 1"
+                  keyTimes="0; 0.15; 0.48; 0.76; 1"
+                  dur="2.4s"
+                  repeatCount="indefinite"
+                />
+                <circle cx="0" cy="0" r="12" fill="url(#nsvBtnPlunger)" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="0.8" />
+                <circle cx="0" cy="0" r="7" fill="none" stroke="rgba(0, 0, 0, 0.35)" strokeWidth="1" />
+                <path d="M 0 -5 L 0 0" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+                <path d="M -2.5 -2.5 A 3.5 3.5 0 1 0 2.5 -2.5" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+              </g>
             </g>
 
-            {/* Automated Press Probe / Finger Reticle */}
-            <g className="nsv-press-probe">
-              {/* Stylized mechanical actuator descending */}
-              <rect x="47" y="10" width="6" height="18" rx="2" fill="#334155" stroke="#64748b" strokeWidth="0.8" />
-              <polygon points="46,28 54,28 50,34" fill="#00e6c8" />
-              <circle cx="50" cy="28" r="1" fill="#ffffff" />
+            {/* Automated Press Probe descending */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0,0; 0,0; 0,14; 0,14; 0,0"
+                keyTimes="0; 0.15; 0.48; 0.76; 1"
+                dur="2.4s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+              />
+              <rect x="47" y="8" width="6" height="18" rx="2" fill="#334155" stroke="#64748b" strokeWidth="0.8" />
+              <polygon points="46,26 54,26 50,32" fill="rgba(0, 230, 200, 0.85)" />
+              <circle cx="50" cy="26" r="1" fill="#ffffff" />
             </g>
           </g>
         )}
 
         {stepType === "COMPLETED" && (
-          <g className="nsv-completed-group" transform="translate(50, 52)">
-            {/* Rotating Tech HUD Hexagon / Compass Rim */}
-            <g className="nsv-completed-bezel">
+          <g transform="translate(50, 52)">
+            {/* Rotating Tech HUD Hexagon */}
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from="0"
+                to="360"
+                dur="12s"
+                repeatCount="indefinite"
+              />
               <polygon
                 points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14"
                 fill="none"
-                stroke="rgba(16, 185, 129, 0.35)"
+                stroke="rgba(16, 185, 129, 0.45)"
                 strokeWidth="1.2"
                 strokeDasharray="4 2"
               />
-              <circle cx="0" cy="0" r="21" fill="none" stroke="rgba(0, 230, 200, 0.2)" strokeWidth="0.8" />
+              <circle cx="0" cy="0" r="21" fill="none" stroke="rgba(0, 230, 200, 0.25)" strokeWidth="0.8" />
             </g>
 
             {/* Pulsing Success Glow Core */}
-            <circle cx="0" cy="0" r="16" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" strokeWidth="1.5" className="nsv-success-core" />
+            <circle cx="0" cy="0" r="16" fill="rgba(16, 185, 129, 0.18)" stroke="#10b981" strokeWidth="1.6">
+              <animate attributeName="r" values="15; 18; 15" dur="2.2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.8; 1; 0.8" dur="2.2s" repeatCount="indefinite" />
+            </circle>
 
             {/* Checkmark */}
             <path
@@ -350,15 +428,8 @@ export default function NextStepVisual({
         )}
       </svg>
 
-      {/* Floating Action Badge at bottom-right */}
-      <span
-        className="next-step-badge"
-        style={{
-          color: badgeMeta.color,
-          borderColor: `${badgeMeta.color}55`,
-        }}
-      >
-        <span style={{ fontSize: 7, marginRight: 2 }}>{badgeMeta.icon}</span>
+      {/* Floating Action Badge at bottom-right matching object-thumbnail-badge */}
+      <span className="object-thumbnail-badge">
         {badgeMeta.text}
       </span>
     </div>

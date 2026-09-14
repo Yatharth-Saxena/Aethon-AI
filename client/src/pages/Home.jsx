@@ -3194,20 +3194,64 @@ export default function Home() {
                   </GlassPanel>
 
                   <GlassPanel className="next-panel">
-                    <PanelTitle title="Next Step" />
+                    <PanelTitle title="Next Step" subtitle="Procedural assembly guidance" />
                     <div className="next-content">
-                      <div className="assembly-visual">
+                      <div className="assembly-visual" title="Animated procedural guidance">
                         <NextStepVisual
                           stepNumber={experimentState.current_step || 1}
                           totalSteps={experimentState.total_steps || 5}
                           nextStepLabel={experimentState.next_step_label || ""}
-                          stepData={(experimentState.steps || [])[((experimentState.current_step || 1) - 1)] || null}
+                          stepData={
+                            (experimentState.steps || [])[
+                              Math.max(0, (experimentState.current_step || 1) - 1)
+                            ] || null
+                          }
                           status={experimentState.status || "IDLE"}
                         />
                       </div>
                       <div className="next-copy">
-                        <strong>{experimentState.next_step_label || "Place Object A on Object B."}</strong>
-                        <span>Follow the sequence validator instructions closely.</span>
+                        {(() => {
+                          const currentStepObj = (experimentState.steps || [])[
+                            Math.max(0, (experimentState.current_step || 1) - 1)
+                          ];
+                          const stepNum = experimentState.current_step || 1;
+                          const totalNum = experimentState.total_steps || 5;
+                          const isComplete = experimentState.status === "COMPLETED";
+                          const isRunning = experimentState.running;
+
+                          return (
+                            <>
+                              <strong style={{ fontSize: 14 }}>
+                                {currentStepObj?.label || experimentState.next_step_label || "Pick up Object A"}
+                              </strong>
+                              <span style={{ fontSize: 12, color: "rgba(215, 225, 230, 0.72)", lineHeight: 1.35 }}>
+                                {currentStepObj?.instruction || currentStepObj?.guidance || "Follow the sequence validator instructions closely."}
+                              </span>
+                              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "2px 0" }}>
+                                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", fontFamily: "var(--mono)", color: "#e2e8f0" }}>
+                                  STEP: {String(stepNum).padStart(2, "0")}/{String(totalNum).padStart(2, "0")}
+                                </span>
+                                {currentStepObj?.expected_action && (
+                                  <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", fontFamily: "var(--mono)", color: "#e2e8f0" }}>
+                                    ACTION: {currentStepObj.expected_action}
+                                  </span>
+                                )}
+                                {(currentStepObj?.expected_target || currentStepObj?.expected_object) && (
+                                  <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", fontFamily: "var(--mono)", color: "#e2e8f0" }}>
+                                    TARGET: {currentStepObj.expected_target || currentStepObj.expected_object}
+                                  </span>
+                                )}
+                              </div>
+                              <span style={{ fontSize: 11.5, color: "rgba(215, 225, 230, 0.65)" }}>
+                                Target: {currentStepObj?.expected_target || currentStepObj?.expected_object || "Object A"} ({isRunning ? "Phase Active" : isComplete ? "Step Verified" : "Pending"})
+                              </span>
+                              <StatusDot
+                                label={isRunning ? "In Progress" : isComplete ? "Completed" : "Standby"}
+                                tone={isRunning ? "white" : "amber"}
+                              />
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </GlassPanel>

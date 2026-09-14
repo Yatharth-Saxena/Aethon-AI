@@ -1089,8 +1089,8 @@ button:focus-visible, input:focus-visible {
   flex: 0 0 auto;
   border-radius: 10px;
   background: linear-gradient(150deg, rgba(28, 34, 40, 0.8), rgba(12, 16, 19, 0.9));
-  border: 1px solid rgba(0, 230, 200, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(224, 233, 236, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 12px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -1192,24 +1192,24 @@ button:focus-visible, input:focus-visible {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 16px 14px;
+  padding: 6px 16px 14px;
   flex: 1 1 auto;
 }
 
 .assembly-visual {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 76px;
+  height: 86px;
   flex: 0 0 auto;
   border-radius: 10px;
   background: linear-gradient(150deg, rgba(28, 34, 40, 0.8), rgba(12, 16, 19, 0.9));
-  border: 1px solid rgba(0, 230, 200, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(224, 233, 236, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 12px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 6px;
   transition: all 0.3s ease;
 }
 
@@ -1217,7 +1217,7 @@ button:focus-visible, input:focus-visible {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
 }
 
 .next-step-visual-root {
@@ -1233,36 +1233,7 @@ button:focus-visible, input:focus-visible {
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
-}
-
-.next-step-badge {
-  position: absolute;
-  bottom: 3px;
-  right: 4px;
-  font-size: 8px;
-  font-weight: 700;
-  font-family: var(--mono);
-  letter-spacing: 0.05em;
-  background: rgba(8, 20, 28, 0.92);
-  padding: 1px 4px;
-  border-radius: 3px;
-  border: 1px solid rgba(0, 230, 200, 0.35);
-  pointer-events: none;
-  max-width: 68px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-flex;
-  align-items: center;
-}
-
-/* Radar beacon dot at top right */
-.nsv-beacon-dot {
-  animation: nsvBeaconPulse 1.8s ease-in-out infinite;
-}
-@keyframes nsvBeaconPulse {
-  0%, 100% { opacity: 0.4; r: 2px; }
-  50% { opacity: 1; r: 2.5px; }
+  overflow: visible;
 }
 
 /* --- STEP 1 & 3: PICK_UP ANIMATIONS --- */
@@ -1282,7 +1253,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-ground-ring {
-  transform-origin: 50px 78px;
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimGroundRing 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 @keyframes nsvAnimGroundRing {
@@ -1291,7 +1263,7 @@ button:focus-visible, input:focus-visible {
     opacity: 0.7;
   }
   50%, 80% {
-    transform: scale(1.2);
+    transform: scale(1.25);
     opacity: 0.2;
   }
   95%, 100% {
@@ -1329,6 +1301,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-grippers {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimGrippers 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 @keyframes nsvAnimGrippers {
@@ -1383,21 +1357,22 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-impact-shockwave {
-  transform-origin: 0 0;
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimImpact 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 @keyframes nsvAnimImpact {
   0%, 47% {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.2);
   }
   51% {
     opacity: 1;
-    transform: scale(0.7);
+    transform: scale(0.65);
   }
   75% {
     opacity: 0;
-    transform: scale(1.5);
+    transform: scale(1.6);
   }
   100% {
     opacity: 0;
@@ -1458,7 +1433,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-btn-plunger {
-  transform-origin: 50px 54px;
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimBtnPlunger 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 @keyframes nsvAnimBtnPlunger {
@@ -1477,6 +1453,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-press-ripple-1 {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimRipple1 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 @keyframes nsvAnimRipple1 {
@@ -1498,6 +1476,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-press-ripple-2 {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimRipple2 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 @keyframes nsvAnimRipple2 {
@@ -1520,7 +1500,8 @@ button:focus-visible, input:focus-visible {
 
 /* --- STEP 6: COMPLETED ANIMATIONS --- */
 .nsv-completed-bezel {
-  transform-origin: 0 0;
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimBezelRotate 14s linear infinite;
 }
 @keyframes nsvAnimBezelRotate {
@@ -1529,6 +1510,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .nsv-success-core {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: nsvAnimSuccessCore 2s ease-in-out infinite;
 }
 @keyframes nsvAnimSuccessCore {
@@ -1547,23 +1530,23 @@ button:focus-visible, input:focus-visible {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   flex: 1 1 auto;
   min-width: 0;
 }
 
 .next-copy strong {
-  display: block;
   color: #f7f9fa;
-  font-size: 15.5px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
+  margin-bottom: 2px;
 }
 
 .next-copy span {
-  color: rgba(215, 225, 230, 0.76);
-  font-size: 12.5px;
-  line-height: 1.4;
+  color: rgba(215, 225, 230, 0.72);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 /* ==========================================================================
